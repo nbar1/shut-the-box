@@ -1,0 +1,54 @@
+{
+	"name": "shut-the-box",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"react": "16.10.2",
+		"react-dom": "16.10.2",
+		"react-scripts": "3.2.0",
+		"styled-components": "4.4.0"
+	},
+	"scripts": {
+		"start": "react-scripts start",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject"
+	},
+	"proxy": "http://localhost:8080",
+	"eslintConfig": {
+		"extends": "react-app"
+	},
+	"browserslist": [
+		">0.2%",
+		"not dead",
+		"not ie <= 11",
+		"not op_mini all"
+	],
+	"devDependencies": {
+		"@testing-library/jest-dom": "4.1.1",
+		"@testing-library/react": "9.3.0",
+		"axios-mock-adapter": "1.17.0",
+		"babel-eslint": "10.0.3",
+		"body-parser": "1.19.0",
+		"eslint": "6.5.1",
+		"eslint-config-prettier": "6.4.0",
+		"eslint-plugin-html": "6.0.0",
+		"eslint-plugin-prettier": "3.1.1",
+		"eslint-plugin-react": "7.16.0",
+		"eslint-plugin-react-hooks": "2.1.2",
+		"express": "4.17.1",
+		"history": "4.10.1",
+		"jest-styled-components": "6.3.3",
+		"minimist": "1.2.0",
+		"prettier": "1.18.2"
+	},
+	"jest": {
+		"collectCoverageFrom": [
+			"src/**/*.{js,jsx}",
+			"!src/index.js",
+			"!src/helpers/*",
+			"!src/themes/*",
+			"!src/test-utils/*"
+		]
+	}
+}
