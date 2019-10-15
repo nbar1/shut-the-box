@@ -1,37 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 export const RootContext = React.createContext({});
 
 export const Provider = ({ children }) => {
-	const [cardsFlipped, setCardsFlipped] = useState({
+	const [cardsClosed, setCardsClosed] = useState({
 		1: false,
 		2: false,
 		3: false,
 		4: false,
 		5: false,
 		6: false,
+		7: false,
+		8: false,
+		9: false,
 	});
 	const [availableCredit, setAvailableCredit] = useState(0);
 	const [gameWon, setGameWon] = useState(false);
 	const [gameLost, setGameLost] = useState(false);
 
 	/**
-	 * flipCard
+	 * closeCard
 	 *
 	 * @param {number} card
 	 * @returns {void}
 	 */
-	const flipCard = card => {
+	const closeCard = card => {
 		if (availableCredit < card) return;
 
-		setCardsFlipped({ ...cardsFlipped, [card]: true });
+		if (cardsClosed[card] === true) return;
+
+		setCardsClosed({ ...cardsClosed, [card]: true });
 
 		setAvailableCredit(availableCredit - card);
 
 		if (isGameWon() === true) setGameWon(true);
 
 		if (isGameLost() === true) setGameLost(true);
+	};
+
+	/**
+	 * canRollOneDie
+	 *
+	 * @returns {bool}
+	 */
+	const canRollOneDie = () => {
+		return cardsClosed[7] === true && cardsClosed[8] === true && cardsClosed[9] === true;
 	};
 
 	/**
@@ -42,7 +56,8 @@ export const Provider = ({ children }) => {
 	const isGameWon = () => {
 		if (availableCredit !== 0) return false;
 
-		Object.values(cardsFlipped).forEach(value => {
+		Object.values(cardsClosed).forEach(value => {
+			console.log(value);
 			if (value === false) return false;
 		});
 
@@ -64,13 +79,16 @@ export const Provider = ({ children }) => {
 	 * @returns {void}
 	 */
 	const resetGame = () => {
-		setCardsFlipped({
+		setCardsClosed({
 			1: false,
 			2: false,
 			3: false,
 			4: false,
 			5: false,
 			6: false,
+			7: false,
+			8: false,
+			9: false,
 		});
 
 		setAvailableCredit(0);
@@ -82,13 +100,14 @@ export const Provider = ({ children }) => {
 
 	// exports
 	const rootContext = {
-		cardsFlipped,
-		flipCard,
+		cardsClosed,
+		closeCard,
 		availableCredit,
 		setAvailableCredit,
 		gameWon,
 		gameLost,
 		resetGame,
+		canRollOneDie,
 	};
 
 	return <RootContext.Provider value={rootContext}>{children}</RootContext.Provider>;

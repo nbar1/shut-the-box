@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
+import { RootContext } from '../RootContext';
 
 const CardWrapper = styled.div`
 	border: 1px solid #000;
@@ -15,23 +16,26 @@ const CardWrapper = styled.div`
 	:hover {
 		transform: scale(1.05);
 	}
+
+	${props =>
+		props.closed &&
+		css`
+			background-color: #a00;
+			color: #fff;
+		`}
 `;
 
 const Number = styled.div`
 	line-height: 160px;
 	font-size: 64px;
 	font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-
-	${props =>
-		props.closed &&
-		css`
-			background-color: #a00;
-		`}
 `;
 
-const Card = ({ number }) => {
+const Card = ({ number, closed }) => {
+	const { closeCard } = useContext(RootContext);
+
 	return (
-		<CardWrapper>
+		<CardWrapper onClick={() => closeCard(number)} closed={closed}>
 			<Number>{number}</Number>
 		</CardWrapper>
 	);
@@ -39,6 +43,7 @@ const Card = ({ number }) => {
 
 Card.propTypes = {
 	number: PropTypes.number.isRequired,
+	closed: PropTypes.bool.isRequired,
 };
 
 export default Card;
