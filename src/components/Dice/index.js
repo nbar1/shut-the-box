@@ -8,6 +8,12 @@ import Die from './Die';
 const DiceWrapper = styled.div`
 	margin-top: 25px;
 	text-align: center;
+
+	${props =>
+		props.isDisabled &&
+		css`
+			opacity: 0.3;
+		`}
 `;
 
 const ButtonsWrapper = styled.div`
@@ -35,6 +41,7 @@ const Button = styled.div`
 const Dice = () => {
 	const [die1, setDie1] = useState(6);
 	const [die2, setDie2] = useState(6);
+	const [isRollingOneDie, setIsRollingOneDie] = useState(false);
 	const { setAvailableCredit, availableCredit, canRollOneDie, resetGame } = useContext(RootContext);
 
 	/**
@@ -44,6 +51,8 @@ const Dice = () => {
 	 */
 	const rollDice = () => {
 		if (availableCredit !== 0) return;
+
+		setIsRollingOneDie(false);
 
 		let i = 0;
 
@@ -63,19 +72,52 @@ const Dice = () => {
 		}, 100);
 	};
 
+	/**
+	 * rollOneDie
+	 *
+	 * @returns {void}
+	 */
+	const rollOneDie = () => {
+		if (availableCredit !== 0) return;
+
+		setIsRollingOneDie(true);
+
+		let i = 0;
+
+		let rollInterval = setInterval(() => {
+			let die1Roll = Math.floor(Math.random() * 6) + 1;
+
+			setDie1(die1Roll);
+
+			i++;
+
+			if (i === 15) {
+				clearInterval(rollInterval);
+				setAvailableCredit(die1Roll);
+			}
+		}, 100);
+	};
+
 	return (
 		<DiceWrapper>
 			<Die number={die1} />
-			<Die number={die2} />
+			{!isRollingOneDie && <Die number={die2} />}
 			<ButtonsWrapper>
 				<Button onClick={() => rollDice()} isDisabled={availableCredit !== 0}>
 					Roll
 				</Button>
-				<Button onClick={() => rollDice()} isDisabled={canRollOneDie() === false || availableCredit !== 0}>
+				<Button onClick={() => rollOneDie()} isDisabled={canRollOneDie() === false || availableCredit !== 0}>
 					Roll One
 				</Button>
 
-				<Button onClick={() => resetGame()}>Reset</Button>
+				<Button
+					onClick={() => {
+						resetGame();
+						setIsRollingOneDie(false);
+					}}
+				>
+					Reset
+				</Button>
 			</ButtonsWrapper>
 		</DiceWrapper>
 	);
