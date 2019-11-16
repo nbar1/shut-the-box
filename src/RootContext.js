@@ -30,13 +30,15 @@ export const Provider = ({ children }) => {
 
 		if (cardsClosed[card] === true) return;
 
-		setCardsClosed({ ...cardsClosed, [card]: true });
+		let newCards = { ...cardsClosed, [card]: true };
+
+		setCardsClosed(newCards);
 
 		let newCredit = availableCredit - card;
 
 		setAvailableCredit(newCredit);
 
-		if (isGameWon(newCredit) === true) setGameWon(true);
+		if (isGameWon(newCredit, newCards) === true) setGameWon(true);
 
 		if (isGameLost() === true) setGameLost(true);
 	};
@@ -56,12 +58,12 @@ export const Provider = ({ children }) => {
 	 * @param {number} availableCredit
 	 * @returns {bool}
 	 */
-	const isGameWon = availableCredit => {
+	const isGameWon = (availableCredit, newCards) => {
 		if (availableCredit !== 0) return false;
 
 		let isWon = true;
 
-		Object.values(cardsClosed).forEach(value => {
+		Object.values(newCards).forEach(value => {
 			if (isWon === true && value === false) isWon = false;
 		});
 

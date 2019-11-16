@@ -8,12 +8,6 @@ import Die from './Die';
 const DiceWrapper = styled.div`
 	margin-top: 25px;
 	text-align: center;
-
-	${props =>
-		props.isDisabled &&
-		css`
-			opacity: 0.3;
-		`}
 `;
 
 const ButtonsWrapper = styled.div`
@@ -38,11 +32,15 @@ const Button = styled.div`
 		`}
 `;
 
+const AvailableCredit = styled.div`
+	font-size: 36px;
+`;
+
 const Dice = () => {
 	const [die1, setDie1] = useState(6);
 	const [die2, setDie2] = useState(6);
 	const [isRollingOneDie, setIsRollingOneDie] = useState(false);
-	const { setAvailableCredit, availableCredit, canRollOneDie, resetGame } = useContext(RootContext);
+	const { setAvailableCredit, availableCredit, canRollOneDie, resetGame, gameWon } = useContext(RootContext);
 
 	/**
 	 * rollDice
@@ -103,13 +101,15 @@ const Dice = () => {
 			<Die number={die1} />
 			{!isRollingOneDie && <Die number={die2} />}
 			<ButtonsWrapper>
-				<Button onClick={() => rollDice()} isDisabled={availableCredit !== 0}>
+				<Button onClick={() => rollDice()} isDisabled={availableCredit !== 0 || gameWon}>
 					Roll
 				</Button>
-				<Button onClick={() => rollOneDie()} isDisabled={canRollOneDie() === false || availableCredit !== 0}>
+				<Button
+					onClick={() => rollOneDie()}
+					isDisabled={canRollOneDie() === false || availableCredit !== 0 || gameWon}
+				>
 					Roll One
 				</Button>
-
 				<Button
 					onClick={() => {
 						resetGame();
@@ -119,6 +119,9 @@ const Dice = () => {
 					Reset
 				</Button>
 			</ButtonsWrapper>
+			<AvailableCredit>
+				{availableCredit}/{isRollingOneDie ? die1 : die1 + die2}
+			</AvailableCredit>
 		</DiceWrapper>
 	);
 };
