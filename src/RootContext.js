@@ -40,7 +40,7 @@ export const Provider = ({ children }) => {
 
 		if (isGameWon(newCredit, newCards) === true) setGameWon(true);
 
-		if (isGameLost() === true) setGameLost(true);
+		if (isGameLost(newCards) === true) setGameLost(true);
 	};
 
 	/**
@@ -75,7 +75,17 @@ export const Provider = ({ children }) => {
 	 *
 	 * @returns {bool}
 	 */
-	const isGameLost = () => {
+	const isGameLost = newCards => {
+		let amountLeft;
+
+		Object.keys(newCards).forEach((card, i) => {
+			if (card === true) amountLeft = amountLeft + i;
+		});
+
+		if (amountLeft > availableCredit) {
+			return true;
+		}
+
 		return false;
 	};
 
