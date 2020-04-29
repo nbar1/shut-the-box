@@ -43,4 +43,61 @@ const getGame = (id) => {
 	return game[0];
 };
 
-console.log(getGame('nick'));
+/**
+ * createGame
+ *
+ * @returns {string} id
+ */
+const createGame = () => {
+	let gameId = Math.random().toString(36).substring(2, 4) + Math.random().toString(36).substring(2, 4);
+	gameId = gameId.toUpperCase();
+
+	games.push({
+		id: gameId,
+		currentPlayer: undefined,
+		players: [],
+		cards: [false, false, false, false, false, false, false, false, false],
+	});
+};
+
+/**
+ * destroyGame
+ *
+ * @param {string} id
+ * @returns {null}
+ */
+const destroyGame = (id) => {
+	let newGames = games.filter((game) => game.id !== id);
+	games = newGames;
+};
+
+/**
+ * createUser
+ *
+ * @param {string} gameId
+ * @param {string} name
+ * @returns {object} user
+ */
+const createUser = (gameId, name) => {
+	try {
+		let user = {
+			id: 'sadfasd',
+			name,
+			score: 0,
+			wins: 0,
+		};
+
+		const gameIndex = games.findIndex((game) => game.id === gameId);
+
+		let thisGame = games[gameIndex];
+		thisGame.players.push(user);
+
+		games[gameIndex] = thisGame;
+
+		return user;
+	} catch (ex) {
+		console.log('there was an error adding the user');
+	}
+
+	return;
+};
