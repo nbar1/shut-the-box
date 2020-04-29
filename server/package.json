@@ -1,0 +1,13 @@
+{
+  "name": "shut-the-box-io-server",
+  "version": "0.0.1",
+  "description": "Socket.IO Server for Shut The Box",
+  "main": "index.js",
+  "repository": "https://github.com/nbar1/shut-the-box",
+  "author": "Nick Barone",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  }
+}

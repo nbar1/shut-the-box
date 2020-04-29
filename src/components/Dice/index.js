@@ -24,7 +24,7 @@ const Button = styled.div`
 	padding: 10px;
 	width: 100px;
 
-	${props =>
+	${(props) =>
 		props.isDisabled &&
 		css`
 			opacity: 0.5;
@@ -116,7 +116,7 @@ const Dice = () => {
 						setIsRollingOneDie(false);
 					}}
 				>
-					Reset
+					End Round
 				</Button>
 			</ButtonsWrapper>
 			<AvailableCredit>
