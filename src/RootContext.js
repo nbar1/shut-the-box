@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import openSocket from 'socket.io-client';
 
 export const RootContext = React.createContext({});
 
@@ -19,13 +20,21 @@ export const Provider = ({ children }) => {
 	const [gameWon, setGameWon] = useState(false);
 	const [gameLost, setGameLost] = useState(false);
 
+	const socket = openSocket('http://localhost:4001');
+
+	useEffect(() => {
+		socket.on('updateGame', (game) => {
+			connsole.log(game);
+		});
+	}, []);
+
 	/**
 	 * closeCard
 	 *
 	 * @param {number} card
 	 * @returns {void}
 	 */
-	const closeCard = card => {
+	const closeCard = (card) => {
 		if (availableCredit < card) return;
 
 		if (cardsClosed[card] === true) return;
@@ -40,7 +49,7 @@ export const Provider = ({ children }) => {
 
 		if (isGameWon(newCredit, newCards) === true) setGameWon(true);
 
-		if (isGameLost(newCards) === true) setGameLost(true);
+		socket.emit('closeCard', card);
 	};
 
 	/**
@@ -63,30 +72,11 @@ export const Provider = ({ children }) => {
 
 		let isWon = true;
 
-		Object.values(newCards).forEach(value => {
+		Object.values(newCards).forEach((value) => {
 			if (isWon === true && value === false) isWon = false;
 		});
 
 		return isWon;
-	};
-
-	/**
-	 * isGameLost
-	 *
-	 * @returns {bool}
-	 */
-	const isGameLost = newCards => {
-		let amountLeft;
-
-		Object.keys(newCards).forEach((card, i) => {
-			if (card === true) amountLeft = amountLeft + i;
-		});
-
-		if (amountLeft > availableCredit) {
-			return true;
-		}
-
-		return false;
 	};
 
 	/**
@@ -95,23 +85,7 @@ export const Provider = ({ children }) => {
 	 * @returns {void}
 	 */
 	const resetGame = () => {
-		setCardsClosed({
-			1: false,
-			2: false,
-			3: false,
-			4: false,
-			5: false,
-			6: false,
-			7: false,
-			8: false,
-			9: false,
-		});
-
-		setAvailableCredit(0);
-
-		setGameWon(false);
-
-		setGameLost(false);
+		socket.emit('resetGame');
 	};
 
 	// exports
@@ -121,7 +95,6 @@ export const Provider = ({ children }) => {
 		availableCredit,
 		setAvailableCredit,
 		gameWon,
-		gameLost,
 		resetGame,
 		canRollOneDie,
 	};

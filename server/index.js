@@ -14,33 +14,34 @@ const io = socketIo(server);
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
 
-// set up games
-let games = [
-	{
-		id: 'nick',
-		players: [
-			{
-				id: 'wfqn334',
-				name: 'Nick',
-				score: 123,
-				wins: 2,
-			},
-		],
+/**
+ * game
+ *
+ * @type {object}
+ */
+let game = {
+	currentPlayer: undefined,
+	players: [],
+	cards: {
+		1: false,
+		2: false,
+		3: false,
+		4: false,
+		5: false,
+		6: false,
+		7: false,
+		8: false,
+		9: false,
 	},
-	{
-		id: 'test',
-	},
-];
+};
 
 /**
- * getGame
+ * emitChanges
  *
- * @param {string} id
- * @returns {object}
+ * @returns {void}
  */
-const getGame = (id) => {
-	let game = games.filter((game) => game.id === id);
-	return game[0];
+const emitChanges = () => {
+	io.emit('updateGame', game);
 };
 
 /**
@@ -49,55 +50,77 @@ const getGame = (id) => {
  * @returns {string} id
  */
 const createGame = () => {
-	let gameId = Math.random().toString(36).substring(2, 4) + Math.random().toString(36).substring(2, 4);
-	gameId = gameId.toUpperCase();
-
-	games.push({
-		id: gameId,
+	game = {
 		currentPlayer: undefined,
 		players: [],
-		cards: [false, false, false, false, false, false, false, false, false],
-	});
+		cards: {
+			1: false,
+			2: false,
+			3: false,
+			4: false,
+			5: false,
+			6: false,
+			7: false,
+			8: false,
+			9: false,
+		},
+	};
+
+	emitChanges();
 };
 
 /**
  * destroyGame
  *
- * @param {string} id
  * @returns {null}
  */
-const destroyGame = (id) => {
-	let newGames = games.filter((game) => game.id !== id);
-	games = newGames;
+const destroyGame = () => {
+	createGame();
 };
 
 /**
  * createUser
  *
- * @param {string} gameId
+ * @param {string} id
  * @param {string} name
  * @returns {object} user
  */
-const createUser = (gameId, name) => {
-	try {
-		let user = {
-			id: 'sadfasd',
-			name,
-			score: 0,
-			wins: 0,
-		};
+const createUser = (id, name) => {
+	let user = {
+		id,
+		name,
+		score: 0,
+		wins: 0,
+	};
 
-		const gameIndex = games.findIndex((game) => game.id === gameId);
-
-		let thisGame = games[gameIndex];
-		thisGame.players.push(user);
-
-		games[gameIndex] = thisGame;
-
-		return user;
-	} catch (ex) {
-		console.log('there was an error adding the user');
-	}
-
-	return;
+	game.players.push(user);
 };
+
+io.sockets.on('connection', (client) => {
+	/**
+	 * addUser
+	 */
+	client.on('addUser', (userInfo) => {
+		createUser(userInfo.id, userInfo.name);
+
+		emitChanges();
+	});
+
+	/**
+	 * closeCard
+	 */
+	client.on('closeCard', (card) => {
+		game.cards[card] = true;
+
+		emitChanges();
+	});
+
+	/**
+	 * resetGame
+	 */
+	client.on('resetGame', (card) => {
+		destroyGame();
+
+		emitChanges();
+	});
+});
